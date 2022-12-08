@@ -1,0 +1,25 @@
+.canvas {
+    position: relative;
+    background-color: #434343;
+    background-image:
+        linear-gradient(0deg,
+            #343434 1%,
+            transparent 2%,
+            transparent 98%,
+            #343434 99%),
+        linear-gradient(90deg,
+            #343434 1%,
+            transparent 2%,
+            transparent 98%,
+            #343434 99%);
+}
+
+.part {
+    position: absolute;
+    background-color: #747474;
+}
+
+.apple {
+    position: absolute;
+    background-color: #FF3434;
+}
