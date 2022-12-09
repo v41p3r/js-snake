@@ -1,15 +1,16 @@
 // GAME CONFIG
 const BLOCK_SIZE = 40;
 const BLOCK_NUM = 20;
-const FPS = 3;
+const FPS = 5;
 
 // Variables
 const FRAME_TIME = 1000 / FPS;
 const body = document.querySelector('body');
 let canvas;
 let timer = 0;
+// let engine = new Engine();
+let apple = new Apple(BLOCK_SIZE);
 let snake = new Snake(BLOCK_SIZE);
-let apple = new Apple(BLOCK_SIZE, BLOCK_NUM, BLOCK_NUM);
 
 function createCanvas() {
     const div = document.createElement('div');
@@ -33,34 +34,72 @@ function processInput(e) {
 }
 
 function collision() {
-    if (snake.possitionX < 0 || snake.possitionX > BLOCK_NUM - 1)
-        location.reload();
-
-    if (snake.possitionY < 0 || snake.possitionY > BLOCK_NUM - 1)
-        location.reload();
+    if (snake.possitionX < 0 || snake.possitionX > BLOCK_NUM - 1) lose();
+    if (snake.possitionY < 0 || snake.possitionY > BLOCK_NUM - 1) lose();
 
     if (snake.possitionX === apple.possitionX & snake.possitionY === apple.possitionY) {
-        snake.growSnake();
-        apple.spawnApple(canvas);
+        const appleDiv = document.querySelector('.apple');
+        if (appleDiv) appleDiv.remove();
+
+        snake.grow();
+        if (snake.body.length == BLOCK_NUM * BLOCK_NUM) win();
+
+        apple.spawn(canvas, randomCoords(snake.body), snake.body.length);
     }
+
+    snake.body.forEach((part, index) => {
+        if (index > 1)
+            if (snake.possitionX === part[0] && snake.possitionY === part[1])
+                lose();
+    });
+}
+
+function randomCoords(snakeArr) {
+    let overlap = false;
+    const coords = [getRandomInt(0, BLOCK_NUM), getRandomInt(0, BLOCK_NUM)];
+    snakeArr.forEach(part => {
+        if (coords[0] === part[0] && coords[1] === part[1])
+            overlap = true;
+    });
+    if (overlap) return randomCoords(snakeArr);
+    return coords;
+}
+
+function win() {
+    console.log('YOU WIN');
+    snake.kill();
+}
+
+function lose() {
+    console.log('YOU LOSE');
+    snake.kill();
+    location.reload();
 }
 
 function update() {
     const time = Date.now();
     if (timer < time) {
         timer = time + FRAME_TIME;
-        snake.updateSnake();
+        snake.move();
+        snake.draw(canvas);
         collision();
-        snake.drawSnake(canvas);
     }
     window.requestAnimationFrame(update);
 }
 
 function main() {
     drawCanvas();
-    apple.spawnApple(canvas);
+    apple.spawn(canvas, randomCoords(snake.body), snake.body.length);
     update();
 }
 main();
 
 window.addEventListener('keyup', (e) => processInput(e));
+
+// helpers
+
+function getRandomInt(min, max) {
+    min = Math.ceil(min);
+    max = Math.floor(max);
+    return Math.floor(Math.random() * (max - min) + min); // The maximum is exclusive and the minimum is inclusive
+}

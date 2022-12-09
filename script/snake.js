@@ -1,5 +1,5 @@
 class Snake {
-    #snakeArr = [[10, 10]];
+    #snakeArr = [[0, 0]];
     #snakeDir = [1, 0];
     #lastDir = [1, 0];
     #bodyW = 40;
@@ -8,26 +8,38 @@ class Snake {
         this.#bodyW = w;
     }
 
-    #createSnakePart(x, y) {
+    #createSnakePart(coords, prev) {
         const div = document.createElement('div');
         div.className = 'part';
         div.style.width = `${this.#bodyW}px`;
         div.style.height = `${this.#bodyW}px`;
-        div.style.left = `${this.#bodyW * x}px`;
-        div.style.top = `${this.#bodyW * y}px`;
+        div.style.left = `${this.#bodyW * coords[0]}px`;
+        div.style.top = `${this.#bodyW * coords[1]}px`;
+
+        if (!prev) return div;
+
+        if (prev[0] === coords[0] - 1 && prev[1] === coords[1])
+            div.style.backgroundColor = '#A33';
+        else if (prev[0] === coords[0] && prev[1] === coords[1] + 1)
+            div.style.backgroundColor = '#3A3';
+        else if (prev[0] === coords[0] + 1 && prev[1] === coords[1])
+            div.style.backgroundColor = '#33A';
+        else if (prev[0] === coords[0] && prev[1] === coords[1] - 1)
+            div.style.backgroundColor = '#AA3 ';
+
         return div;
     }
 
-    drawSnake(canvas) {
+    draw(canvas) {
         const snakeParts = document.querySelectorAll('.part');
         snakeParts.forEach(part => part.remove());
 
-        this.#snakeArr.forEach(part => {
-            canvas.appendChild(this.#createSnakePart(...part));
+        this.#snakeArr.forEach((part, index) => {
+            canvas.appendChild(this.#createSnakePart(part, this.#snakeArr[index - 1] ?? null));
         });
     }
 
-    updateSnake() {
+    move() {
         this.#lastDir = [...this.#snakeDir];
 
         for (let i = this.#snakeArr.length - 1; i > 0; i--) {
@@ -37,8 +49,13 @@ class Snake {
         this.#snakeArr[0][1] += this.#snakeDir[1];
     }
 
-    growSnake() {
-        this.#snakeArr.push(this.#snakeArr[0]);
+    kill() {
+        this.#snakeArr = [[0, 0]];
+        this.#snakeDir = [1, 0];
+    }
+
+    grow() {
+        this.#snakeArr.push(this.#snakeArr[this.#snakeArr.length - 1]);
     }
 
     goUp() {
@@ -56,6 +73,10 @@ class Snake {
     goLeft() {
         if (this.#lastDir[0] != 1 && this.#lastDir[1] != 0)
             this.#snakeDir = [-1, 0];
+    }
+
+    get body() {
+        return this.#snakeArr;
     }
 
     get possitionX() {
