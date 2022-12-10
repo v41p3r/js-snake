@@ -1,15 +1,17 @@
 // GAME CONFIG
 const BLOCK_SIZE = 40;
 const BLOCK_NUM = 20;
-const FPS = 5;
+let FPS = 3;
 
 // Variables
-const FRAME_TIME = 1000 / FPS;
+let FRAME_TIME = 1000 / FPS;
 const body = document.querySelector('body');
 let canvas;
 let timer = 0;
 // let engine = new Engine();
-let apple = new Apple(BLOCK_SIZE);
+let apple = new Food(BLOCK_SIZE);
+let lemmon = new Food(BLOCK_SIZE, 'lemmon', '#FFFF33', '<i class="fa-solid fa-lemon"></i>');
+let carrot = new Food(BLOCK_SIZE, 'carrot', '#FF7733', '<i class="fa-solid fa-carrot"></i>');
 let snake = new Snake(BLOCK_SIZE);
 
 function createCanvas() {
@@ -38,13 +40,36 @@ function collision() {
     if (snake.possitionY < 0 || snake.possitionY > BLOCK_NUM - 1) lose();
 
     if (snake.possitionX === apple.possitionX & snake.possitionY === apple.possitionY) {
-        const appleDiv = document.querySelector('.apple');
+        const appleDiv = document.querySelector(apple.classQuery);
         if (appleDiv) appleDiv.remove();
 
+        speedUp();
         snake.grow();
         if (snake.body.length == BLOCK_NUM * BLOCK_NUM) win();
 
         apple.spawn(canvas, randomCoords(snake.body), snake.body.length);
+    }
+
+    if (snake.possitionX === lemmon.possitionX & snake.possitionY === lemmon.possitionY) {
+        const lemmonDiv = document.querySelector(lemmon.classQuery);
+        if (lemmonDiv) lemmonDiv.remove();
+
+        speedUp();
+        snake.grow();
+        if (snake.body.length == BLOCK_NUM * BLOCK_NUM) win();
+
+        lemmon.spawn(canvas, randomCoords(snake.body), snake.body.length);
+    }
+
+    if (snake.possitionX === carrot.possitionX & snake.possitionY === carrot.possitionY) {
+        const carrotDiv = document.querySelector(carrot.classQuery);
+        if (carrotDiv) carrotDiv.remove();
+
+        speedUp();
+        snake.grow();
+        if (snake.body.length == BLOCK_NUM * BLOCK_NUM) win();
+
+        carrot.spawn(canvas, randomCoords(snake.body), snake.body.length);
     }
 
     snake.body.forEach((part, index) => {
@@ -76,6 +101,12 @@ function lose() {
     location.reload();
 }
 
+function speedUp() {
+    FPS += 0.1;
+    FRAME_TIME = 1000 / FPS;
+    console.log('SPEED', FPS);
+}
+
 function update() {
     const time = Date.now();
     if (timer < time) {
@@ -90,6 +121,8 @@ function update() {
 function main() {
     drawCanvas();
     apple.spawn(canvas, randomCoords(snake.body), snake.body.length);
+    lemmon.spawn(canvas, randomCoords(snake.body), snake.body.length);
+    carrot.spawn(canvas, randomCoords(snake.body), snake.body.length);
     update();
 }
 main();
@@ -97,9 +130,8 @@ main();
 window.addEventListener('keyup', (e) => processInput(e));
 
 // helpers
-
 function getRandomInt(min, max) {
     min = Math.ceil(min);
     max = Math.floor(max);
-    return Math.floor(Math.random() * (max - min) + min); // The maximum is exclusive and the minimum is inclusive
+    return Math.floor(Math.random() * (max - min) + min);
 }

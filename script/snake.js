@@ -8,7 +8,7 @@ class Snake {
         this.#bodyW = w;
     }
 
-    #createSnakePart(coords, prev) {
+    #createSnakeHead(coords) {
         const div = document.createElement('div');
         div.className = 'part';
         div.style.width = `${this.#bodyW}px`;
@@ -16,16 +16,30 @@ class Snake {
         div.style.left = `${this.#bodyW * coords[0]}px`;
         div.style.top = `${this.#bodyW * coords[1]}px`;
 
-        if (!prev) return div;
+        return div;
+    }
+
+    #createSnakePart(coords, prev) {
+        const margin = Math.floor(this.#bodyW / 12);
+        const div = document.createElement('div');
+        div.className = 'part';
+        div.style.width = `${this.#bodyW}px`;
+        div.style.height = `${this.#bodyW - margin * 2}px`;
+        div.style.left = `${this.#bodyW * coords[0]}px`;
+        div.style.top = `${this.#bodyW * coords[1] + margin}px`;
 
         if (prev[0] === coords[0] - 1 && prev[1] === coords[1])
             div.style.backgroundColor = '#A33';
-        else if (prev[0] === coords[0] && prev[1] === coords[1] + 1)
+        else if (prev[0] === coords[0] && prev[1] === coords[1] + 1) {
             div.style.backgroundColor = '#3A3';
+            div.style.transform = 'rotate(90deg)';
+        }
         else if (prev[0] === coords[0] + 1 && prev[1] === coords[1])
             div.style.backgroundColor = '#33A';
-        else if (prev[0] === coords[0] && prev[1] === coords[1] - 1)
+        else if (prev[0] === coords[0] && prev[1] === coords[1] - 1) {
             div.style.backgroundColor = '#AA3 ';
+            div.style.transform = 'rotate(270deg)';
+        }
 
         return div;
     }
@@ -35,7 +49,10 @@ class Snake {
         snakeParts.forEach(part => part.remove());
 
         this.#snakeArr.forEach((part, index) => {
-            canvas.appendChild(this.#createSnakePart(part, this.#snakeArr[index - 1] ?? null));
+            if (index === 0)
+                canvas.appendChild(this.#createSnakeHead(part));
+            else
+                canvas.appendChild(this.#createSnakePart(part, this.#snakeArr[index - 1]));
         });
     }
 

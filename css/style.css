@@ -26,9 +26,9 @@ body {
 .part {
     position: absolute;
     background-color: #747474;
+    border-radius: 2px;
 }
 
-.apple {
+.food {
     position: absolute;
-    background-color: #A3A;
 }
