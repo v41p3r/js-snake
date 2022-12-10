@@ -90,7 +90,7 @@ class Snake {
 
             let tempDie = false;
 
-            if (tempX < 0 || tempX > this.#canvasH || tempY < 0 || tempY > this.#canvasH) {
+            if (tempX < 0 || tempX > this.#canvasH - 1 || tempY < 0 || tempY > this.#canvasH - 1) {
                 tempDie = true;
                 this.#snakeMov = [];
                 console.log('gonn die');
