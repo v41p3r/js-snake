@@ -12,7 +12,7 @@ let canvas;
 let apple = new Food(BLOCK_SIZE);
 let lemmon = new Food(BLOCK_SIZE, 'lemmon', '#FFFF33', '<i class="fa-solid fa-lemon"></i>');
 let carrot = new Food(BLOCK_SIZE, 'carrot', '#FF7733', '<i class="fa-solid fa-carrot"></i>');
-let snake = new Snake(BLOCK_SIZE);
+let snake = new Snake(BLOCK_SIZE, BLOCK_NUM);
 
 function createCanvas() {
     const div = document.createElement('div');

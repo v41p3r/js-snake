@@ -3,9 +3,12 @@ class Snake {
     #snakeMov = [[1, 0], [1, 0]];
     #lastDir = [1, 0];
     #bodyW = 40;
+    #canvasH = 20;
+    #willDie = false;
 
-    constructor(w) {
+    constructor(w, h) {
         this.#bodyW = w;
+        this.#canvasH = h;
     }
 
     #createSnakeHead(coords) {
@@ -56,7 +59,7 @@ class Snake {
         });
     }
 
-    move() {
+    #completeMove() {
         if (this.#snakeMov.length) {
             this.#lastDir = [...this.#snakeMov[0]];
             this.#snakeMov.shift();
@@ -72,6 +75,44 @@ class Snake {
     kill() {
         this.#snakeArr = [[0, 0]];
         this.#snakeMov = [[1, 0]];
+        this.#willDie = false;
+    }
+
+    move() {
+        if (!this.#willDie) {
+            let tempDir = this.#lastDir;
+            if (this.#snakeMov.length) {
+                tempDir = [...this.#snakeMov[0]];
+            }
+
+            const tempY = this.#snakeArr[0][0] + this.#lastDir[0];
+            const tempX = this.#snakeArr[0][1] + this.#lastDir[1];
+
+            let tempDie = false;
+
+            if (tempX < 0 || tempX > this.#canvasH || tempY < 0 || tempY > this.#canvasH) {
+                tempDie = true;
+                this.#snakeMov = [];
+                console.log('gonn die');
+            }
+
+            this.#snakeArr.forEach(part => {
+                if (part[0] === tempY && part[1] === tempX) {
+                    tempDie = true;
+                    this.#snakeMov = [];
+                    console.log('gonn die');
+                }
+            });
+
+            this.#willDie = tempDie;
+
+            if (!tempDie)
+                this.#completeMove();
+        }
+        else {
+            this.#completeMove();
+            this.#willDie = false;
+        }
     }
 
     #addDir(dir) {
