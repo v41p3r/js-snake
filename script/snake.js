@@ -1,6 +1,6 @@
 class Snake {
     #snakeArr = [[0, 0]];
-    #snakeDir = [1, 0];
+    #snakeMov = [[1, 0], [1, 0]];
     #lastDir = [1, 0];
     #bodyW = 40;
 
@@ -57,18 +57,37 @@ class Snake {
     }
 
     move() {
-        this.#lastDir = [...this.#snakeDir];
+        if (this.#snakeMov.length) {
+            this.#lastDir = [...this.#snakeMov[0]];
+            this.#snakeMov.shift();
+        }
 
         for (let i = this.#snakeArr.length - 1; i > 0; i--) {
             this.#snakeArr.splice(i, 1, [...this.#snakeArr[i - 1]]);
         }
-        this.#snakeArr[0][0] += this.#snakeDir[0];
-        this.#snakeArr[0][1] += this.#snakeDir[1];
+        this.#snakeArr[0][0] += this.#lastDir[0];
+        this.#snakeArr[0][1] += this.#lastDir[1];
     }
 
     kill() {
         this.#snakeArr = [[0, 0]];
-        this.#snakeDir = [1, 0];
+        this.#snakeMov = [[1, 0]];
+    }
+
+    #addDir(dir) {
+        if (this.#snakeMov.length === 0) {
+            const lastInverted = this.#lastDir.map(el => el * -1);
+            if (dir[0] !== lastInverted[0] || dir[1] !== lastInverted[1])
+                this.#snakeMov.push(dir);
+        }
+        else {
+            const lastInverted = [...this.#snakeMov[0]].map(el => el * -1);
+            if (dir[0] !== lastInverted[0] || dir[1] !== lastInverted[1])
+                if (this.#snakeMov.length === 1)
+                    this.#snakeMov.push(dir);
+                else if (this.#snakeMov.length === 2)
+                    this.#snakeMov[1] = dir;
+        }
     }
 
     grow() {
@@ -76,20 +95,16 @@ class Snake {
     }
 
     goUp() {
-        if (this.#lastDir[0] != 0 && this.#lastDir[1] != 1)
-            this.#snakeDir = [0, -1];
+        this.#addDir([0, -1]);
     }
     goRight() {
-        if (this.#lastDir[0] != -1 && this.#lastDir[1] != 0)
-            this.#snakeDir = [1, 0];
+        this.#addDir([1, 0]);
     }
     goDown() {
-        if (this.#lastDir[0] != 0 && this.#lastDir[1] != -1)
-            this.#snakeDir = [0, 1];
+        this.#addDir([0, 1]);
     }
     goLeft() {
-        if (this.#lastDir[0] != 1 && this.#lastDir[1] != 0)
-            this.#snakeDir = [-1, 0];
+        this.#addDir([-1, 0]);
     }
 
     get body() {
