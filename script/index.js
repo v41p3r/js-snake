@@ -1,13 +1,13 @@
 // GAME CONFIG
 const BLOCK_SIZE = 40;
 const BLOCK_NUM = 20;
-let FPS = 3;
+const SPEED_STEP = 0.02;
 
-// Variables
-let FRAME_TIME = 1000 / FPS;
 const body = document.querySelector('body');
-let canvas;
+// Variables
+let speed = 5;
 let timer = 0;
+let canvas;
 // let engine = new Engine();
 let apple = new Food(BLOCK_SIZE);
 let lemmon = new Food(BLOCK_SIZE, 'lemmon', '#FFFF33', '<i class="fa-solid fa-lemon"></i>');
@@ -102,15 +102,14 @@ function lose() {
 }
 
 function speedUp() {
-    FPS += 0.1;
-    FRAME_TIME = 1000 / FPS;
-    console.log('SPEED', FPS);
+    speed += SPEED_STEP;
+    console.log('SPEED', speed);
 }
 
 function update() {
     const time = Date.now();
     if (timer < time) {
-        timer = time + FRAME_TIME;
+        timer = time + 1000 / speed;
         snake.move();
         snake.draw(canvas);
         collision();
