@@ -90,23 +90,19 @@ class Snake {
 
             let tempDie = false;
 
-            if (tempX < 0 || tempX > this.#canvasH - 1 || tempY < 0 || tempY > this.#canvasH - 1) {
-                tempDie = true;
-                this.#snakeMov = [];
-                console.log('gonn die');
-            }
+            if (tempX < 0 || tempX > this.#canvasH - 1 || tempY < 0 || tempY > this.#canvasH - 1) tempDie = true;
 
             this.#snakeArr.forEach(part => {
-                if (part[0] === tempY && part[1] === tempX) {
+                if (part[0] === tempY && part[1] === tempX)
                     tempDie = true;
-                    this.#snakeMov = [];
-                    console.log('gonn die');
-                }
             });
 
-            this.#willDie = tempDie;
-
-            if (!tempDie)
+            if (tempDie) {
+                console.log('gonna die');
+                this.#willDie = true;
+                if (this.#snakeMov.length === 2)
+                    this.#snakeMov.shift();
+            } else
                 this.#completeMove();
         }
         else {
@@ -116,18 +112,23 @@ class Snake {
     }
 
     #addDir(dir) {
-        if (this.#snakeMov.length === 0) {
-            const lastInverted = this.#lastDir.map(el => el * -1);
+        const lastInverted = this.#lastDir.map(el => el * -1);
+        if (this.#willDie) {
             if (dir[0] !== lastInverted[0] || dir[1] !== lastInverted[1])
-                this.#snakeMov.push(dir);
-        }
-        else {
-            const lastInverted = [...this.#snakeMov[0]].map(el => el * -1);
-            if (dir[0] !== lastInverted[0] || dir[1] !== lastInverted[1])
-                if (this.#snakeMov.length === 1)
+                this.#snakeMov = [dir];
+        } else {
+            if (this.#snakeMov.length === 0) {
+                if (dir[0] !== lastInverted[0] || dir[1] !== lastInverted[1])
                     this.#snakeMov.push(dir);
-                else if (this.#snakeMov.length === 2)
-                    this.#snakeMov[1] = dir;
+            }
+            else {
+                const lastInverted = [...this.#snakeMov[0]].map(el => el * -1);
+                if (dir[0] !== lastInverted[0] || dir[1] !== lastInverted[1])
+                    if (this.#snakeMov.length === 1)
+                        this.#snakeMov.push(dir);
+                    else if (this.#snakeMov.length === 2)
+                        this.#snakeMov[1] = dir;
+            }
         }
     }
 
