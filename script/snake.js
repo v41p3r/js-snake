@@ -98,7 +98,6 @@ class Snake {
             });
 
             if (tempDie) {
-                console.log('gonna die');
                 this.#willDie = true;
                 if (this.#snakeMov.length === 2)
                     this.#snakeMov.shift();

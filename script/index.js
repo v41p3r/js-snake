@@ -1,31 +1,19 @@
 // GAME CONFIG
 const BLOCK_SIZE = 40;
 const BLOCK_NUM = 20;
+const SPEED_BASE = 5;
 const SPEED_STEP = 0.02;
 
-const body = document.querySelector('body');
+const BUILD_VERSION = 'build 1';
+
 // Variables
-let speed = 5;
+let speed = SPEED_BASE;
 let timer = 0;
-let canvas;
-// let engine = new Engine();
+let ui = new UIManager();
 let apple = new Food(BLOCK_SIZE);
 let lemmon = new Food(BLOCK_SIZE, 'lemmon', '#FFFF33', '<i class="fa-solid fa-lemon"></i>');
 let carrot = new Food(BLOCK_SIZE, 'carrot', '#FF7733', '<i class="fa-solid fa-carrot"></i>');
 let snake = new Snake(BLOCK_SIZE, BLOCK_NUM);
-
-function createCanvas() {
-    const div = document.createElement('div');
-    div.className = 'canvas';
-    div.style.width = `${BLOCK_NUM * BLOCK_SIZE}px`;
-    div.style.height = `${BLOCK_NUM * BLOCK_SIZE}px`;
-    div.style.backgroundSize = `${BLOCK_SIZE}px ${BLOCK_SIZE}px`;
-    return div;
-}
-function drawCanvas() {
-    body.appendChild(createCanvas());
-    canvas = document.querySelector('.canvas');
-}
 
 function processInput(e) {
     if (e.key === 'R' || e.key === 'r') location.reload();
@@ -47,7 +35,7 @@ function collision() {
         snake.grow();
         if (snake.body.length == BLOCK_NUM * BLOCK_NUM) win();
 
-        apple.spawn(canvas, randomCoords(snake.body), snake.body.length);
+        apple.spawn(ui.canvas, randomCoords(snake.body), snake.body.length);
     }
 
     if (snake.possitionX === lemmon.possitionX & snake.possitionY === lemmon.possitionY) {
@@ -58,7 +46,7 @@ function collision() {
         snake.grow();
         if (snake.body.length == BLOCK_NUM * BLOCK_NUM) win();
 
-        lemmon.spawn(canvas, randomCoords(snake.body), snake.body.length);
+        lemmon.spawn(ui.canvas, randomCoords(snake.body), snake.body.length);
     }
 
     if (snake.possitionX === carrot.possitionX & snake.possitionY === carrot.possitionY) {
@@ -69,7 +57,7 @@ function collision() {
         snake.grow();
         if (snake.body.length == BLOCK_NUM * BLOCK_NUM) win();
 
-        carrot.spawn(canvas, randomCoords(snake.body), snake.body.length);
+        carrot.spawn(ui.canvas, randomCoords(snake.body), snake.body.length);
     }
 
     snake.body.forEach((part, index) => {
@@ -98,7 +86,7 @@ function win() {
 function lose() {
     console.log('YOU LOSE');
     snake.kill();
-    location.reload();
+    speed = SPEED_BASE;
 }
 
 function speedUp() {
@@ -111,22 +99,22 @@ function update() {
     if (timer < time) {
         timer = time + 1000 / speed;
         snake.move();
-        snake.draw(canvas);
+        snake.draw(ui.canvas);
         collision();
     }
     window.requestAnimationFrame(update);
 }
 
 function main() {
-    drawCanvas();
-    apple.spawn(canvas, randomCoords(snake.body), snake.body.length);
-    lemmon.spawn(canvas, randomCoords(snake.body), snake.body.length);
-    carrot.spawn(canvas, randomCoords(snake.body), snake.body.length);
+    ui.drawCanvas(BUILD_VERSION);
+    apple.spawn(ui.canvas, randomCoords(snake.body), snake.body.length);
+    lemmon.spawn(ui.canvas, randomCoords(snake.body), snake.body.length);
+    carrot.spawn(ui.canvas, randomCoords(snake.body), snake.body.length);
     update();
 }
 main();
 
-window.addEventListener('keyup', (e) => processInput(e));
+window.addEventListener('keydown', (e) => processInput(e));
 
 // helpers
 function getRandomInt(min, max) {
