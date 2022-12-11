@@ -4,14 +4,15 @@ const BLOCK_NUM = 20;
 const SPEED_BASE = 5;
 const SPEED_STEP = 0.02;
 
-const BUILD_VERSION = 'build 1';
+// for debug purposes
+const BUILD_VERSION = 4;
 
 // Variables
 let speed = SPEED_BASE;
 let timer = 0;
 let ui = new UIManager();
 let apple = new Food(BLOCK_SIZE);
-let lemmon = new Food(BLOCK_SIZE, 'lemmon', '#FFFF33', '<i class="fa-solid fa-lemon"></i>');
+let lemon = new Food(BLOCK_SIZE, 'lemon', '#FFFF33', '<i class="fa-solid fa-lemon"></i>');
 let carrot = new Food(BLOCK_SIZE, 'carrot', '#FF7733', '<i class="fa-solid fa-carrot"></i>');
 let snake = new Snake(BLOCK_SIZE, BLOCK_NUM);
 
@@ -27,44 +28,28 @@ function collision() {
     if (snake.possitionX < 0 || snake.possitionX > BLOCK_NUM - 1) lose();
     if (snake.possitionY < 0 || snake.possitionY > BLOCK_NUM - 1) lose();
 
-    if (snake.possitionX === apple.possitionX & snake.possitionY === apple.possitionY) {
-        const appleDiv = document.querySelector(apple.classQuery);
-        if (appleDiv) appleDiv.remove();
-
-        speedUp();
-        snake.grow();
-        if (snake.body.length == BLOCK_NUM * BLOCK_NUM) win();
-
-        apple.spawn(ui.canvas, randomCoords(snake.body), snake.body.length);
-    }
-
-    if (snake.possitionX === lemmon.possitionX & snake.possitionY === lemmon.possitionY) {
-        const lemmonDiv = document.querySelector(lemmon.classQuery);
-        if (lemmonDiv) lemmonDiv.remove();
-
-        speedUp();
-        snake.grow();
-        if (snake.body.length == BLOCK_NUM * BLOCK_NUM) win();
-
-        lemmon.spawn(ui.canvas, randomCoords(snake.body), snake.body.length);
-    }
-
-    if (snake.possitionX === carrot.possitionX & snake.possitionY === carrot.possitionY) {
-        const carrotDiv = document.querySelector(carrot.classQuery);
-        if (carrotDiv) carrotDiv.remove();
-
-        speedUp();
-        snake.grow();
-        if (snake.body.length == BLOCK_NUM * BLOCK_NUM) win();
-
-        carrot.spawn(ui.canvas, randomCoords(snake.body), snake.body.length);
-    }
+    foodCollision(apple);
+    foodCollision(lemon);
+    foodCollision(carrot);
 
     snake.body.forEach((part, index) => {
         if (index > 1)
             if (snake.possitionX === part[0] && snake.possitionY === part[1])
                 lose();
     });
+}
+
+function foodCollision(food) {
+    if (snake.possitionX === food.possitionX & snake.possitionY === food.possitionY) {
+        const foodDiv = document.querySelector(food.classQuery);
+        if (foodDiv) foodDiv.remove();
+
+        speedUp();
+        snake.grow();
+        if (snake.body.length == BLOCK_NUM * BLOCK_NUM) win();
+
+        food.spawn(ui.canvas, randomCoords(snake.body), snake.body.length);
+    }
 }
 
 function randomCoords(snakeArr) {
@@ -106,9 +91,9 @@ function update() {
 }
 
 function main() {
-    ui.drawCanvas(BUILD_VERSION);
+    ui.drawCanvas(`build: ${BUILD_VERSION}`);
     apple.spawn(ui.canvas, randomCoords(snake.body), snake.body.length);
-    lemmon.spawn(ui.canvas, randomCoords(snake.body), snake.body.length);
+    lemon.spawn(ui.canvas, randomCoords(snake.body), snake.body.length);
     carrot.spawn(ui.canvas, randomCoords(snake.body), snake.body.length);
     update();
 }

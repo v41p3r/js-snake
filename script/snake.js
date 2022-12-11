@@ -5,6 +5,7 @@ class Snake {
     #bodyW = 40;
     #canvasH = 20;
     #willDie = false;
+    #dead = false;
 
     constructor(w, h) {
         this.#bodyW = w;
@@ -18,6 +19,7 @@ class Snake {
         div.style.height = `${this.#bodyW}px`;
         div.style.left = `${this.#bodyW * coords[0]}px`;
         div.style.top = `${this.#bodyW * coords[1]}px`;
+        div.style.zIndex = '420';
 
         return div;
     }
@@ -72,42 +74,49 @@ class Snake {
         this.#snakeArr[0][1] += this.#lastDir[1];
     }
 
+
     kill() {
+        this.#dead = true;
+    }
+
+    reset() {
         this.#snakeArr = [[0, 0]];
         this.#snakeMov = [[1, 0]];
         this.#willDie = false;
+        this.#dead = false;
     }
 
     move() {
-        if (!this.#willDie) {
-            let tempDir = this.#lastDir;
-            if (this.#snakeMov.length) {
-                tempDir = [...this.#snakeMov[0]];
+        if (!this.#dead)
+            if (!this.#willDie) {
+                let tempDir = this.#lastDir;
+                if (this.#snakeMov.length) {
+                    tempDir = [...this.#snakeMov[0]];
+                }
+
+                const tempY = this.#snakeArr[0][0] + this.#lastDir[0];
+                const tempX = this.#snakeArr[0][1] + this.#lastDir[1];
+
+                let tempDie = false;
+
+                if (tempX < 0 || tempX > this.#canvasH - 1 || tempY < 0 || tempY > this.#canvasH - 1) tempDie = true;
+
+                this.#snakeArr.forEach(part => {
+                    if (part[0] === tempY && part[1] === tempX)
+                        tempDie = true;
+                });
+
+                if (tempDie) {
+                    this.#willDie = true;
+                    if (this.#snakeMov.length === 2)
+                        this.#snakeMov.shift();
+                } else
+                    this.#completeMove();
             }
-
-            const tempY = this.#snakeArr[0][0] + this.#lastDir[0];
-            const tempX = this.#snakeArr[0][1] + this.#lastDir[1];
-
-            let tempDie = false;
-
-            if (tempX < 0 || tempX > this.#canvasH - 1 || tempY < 0 || tempY > this.#canvasH - 1) tempDie = true;
-
-            this.#snakeArr.forEach(part => {
-                if (part[0] === tempY && part[1] === tempX)
-                    tempDie = true;
-            });
-
-            if (tempDie) {
-                this.#willDie = true;
-                if (this.#snakeMov.length === 2)
-                    this.#snakeMov.shift();
-            } else
+            else {
                 this.#completeMove();
-        }
-        else {
-            this.#completeMove();
-            this.#willDie = false;
-        }
+                this.#willDie = false;
+            }
     }
 
     #addDir(dir) {
