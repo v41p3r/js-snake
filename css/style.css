@@ -8,6 +8,10 @@ body {
     height: 100vh;
 }
 
+p {
+    margin: 5px
+}
+
 .canvas {
     position: relative;
     background-color: #434343;
@@ -28,6 +32,10 @@ body {
     position: absolute;
     background-color: #747474;
     border-radius: 2px;
+}
+
+.danger {
+    background-color: #A4A4A4;
 }
 
 .food {

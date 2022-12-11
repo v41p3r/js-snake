@@ -5,7 +5,7 @@ const SPEED_BASE = 5;
 const SPEED_STEP = 0.02;
 
 // for debug purposes
-const BUILD_VERSION = 4;
+const BUILD_VERSION = 11;
 
 // Variables
 let speed = SPEED_BASE;
@@ -16,8 +16,10 @@ let lemon = new Food(BLOCK_SIZE, 'lemon', '#FFFF33', '<i class="fa-solid fa-lemo
 let carrot = new Food(BLOCK_SIZE, 'carrot', '#FF7733', '<i class="fa-solid fa-carrot"></i>');
 let snake = new Snake(BLOCK_SIZE, BLOCK_NUM);
 
+let lost = false;
+
 function processInput(e) {
-    if (e.key === 'R' || e.key === 'r') location.reload();
+    if (e.key === 'R' || e.key === 'r') reset();
     else if (e.key === 'ArrowUp' || e.key === 'W' || e.key === 'w') snake.goUp();
     else if (e.key === 'ArrowRight' || e.key === 'D' || e.key === 'd') snake.goRight();
     else if (e.key === 'ArrowDown' || e.key === 'S' || e.key === 's') snake.goDown();
@@ -46,6 +48,7 @@ function foodCollision(food) {
 
         speedUp();
         snake.grow();
+        ui.addScore();
         if (snake.body.length == BLOCK_NUM * BLOCK_NUM) win();
 
         food.spawn(ui.canvas, randomCoords(snake.body), snake.body.length);
@@ -69,9 +72,19 @@ function win() {
 }
 
 function lose() {
-    console.log('YOU LOSE');
-    snake.kill();
-    speed = SPEED_BASE;
+    if (!lost) {
+        console.log('YOU LOSE');
+        snake.kill();
+        speed = SPEED_BASE;
+        ui.setMsg('Press R to reset!');
+        lost = true;
+    }
+}
+function reset() {
+    snake.reset();
+    ui.resetScore();
+    ui.setMsg(`HIGH SCORE: ${ui.highScore}`);
+    lost = false;
 }
 
 function speedUp() {
@@ -83,9 +96,11 @@ function update() {
     const time = Date.now();
     if (timer < time) {
         timer = time + 1000 / speed;
-        snake.move();
-        snake.draw(ui.canvas);
-        collision();
+        if (!lost) {
+            snake.move();
+            snake.draw(ui.canvas);
+            collision();
+        }
     }
     window.requestAnimationFrame(update);
 }

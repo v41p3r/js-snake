@@ -15,6 +15,8 @@ class Snake {
     #createSnakeHead(coords) {
         const div = document.createElement('div');
         div.className = 'part';
+        if (this.#willDie)
+            div.classList.add('danger');
         div.style.width = `${this.#bodyW}px`;
         div.style.height = `${this.#bodyW}px`;
         div.style.left = `${this.#bodyW * coords[0]}px`;
